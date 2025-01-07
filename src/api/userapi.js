@@ -60,6 +60,16 @@ class AuthService {
         return error.response.data;
        }
     }
+
+    async userList() {
+        try {
+            const response = await axiosInstance.get('/users/user-list');
+            console.log('Users List: ', response.data);  // Use res.data to get the response body
+            return response.data;
+          } catch (error) {
+            return error.response.data;
+          }
+    }
 }
 
 const authService = new AuthService();
