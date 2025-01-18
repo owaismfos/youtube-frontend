@@ -1,8 +1,11 @@
 import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import { ChatComponent, Header, Home, About, Subscription, Video, Login, Register, VideoUpload, Channel, CreateChannel } from './components/index.js'
 import authService from './api/userapi.js'
+import { login } from './features/auth/authSlice.js';
+import { updateReduxState } from './utils/tokenHandle.js'
 // import ChatComponent from './ChatComponent';
 
 function App() {
@@ -12,6 +15,8 @@ function App() {
     const [activeUser, setActiveUser] = useState(null);
     //const users = ['Alice', 'Bob', 'Charlie'];
     const [users, setUsers] = useState([])
+
+    const dispatch = useDispatch()
 
     const handleUserClick = (user) => {
       setActiveUser(user);
@@ -28,6 +33,9 @@ function App() {
     }
 
     useEffect(() => {
+      if (!userStatus && localStorage.getItem('authToken')) {
+        updateReduxState(dispatch)
+      }
       getUsersList();
     }, [userStatus])
 
@@ -55,7 +63,7 @@ function App() {
                     )}
                 </Routes>
             </div>
-            {userStatus && (
+            {userStatus && users && Array.isArray(users) && (
                 <div className="fixed bottom-4 right-4 w-80 h-[500px] bg-gray-800 border border-gray-700 rounded-lg shadow-lg text-white">
                   <div className="p-4 border-b border-gray-700 font-bold">Users For Chat</div>
                   <div className="p-4">
@@ -78,8 +86,8 @@ function App() {
             )}
 
             {activeUser && (
-              <div className="fixed bottom-4 right-96 w-80">
-                <ChatComponent activeUser={activeUser} />
+              <div className="fixed bottom-4 right-96 w-1/3">
+                <ChatComponent activeUser={activeUser} isOpen={true} />
               </div>
             )}
         </Router>

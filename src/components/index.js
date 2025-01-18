@@ -13,6 +13,7 @@ import ImageUploadModal from "./Modal/ImageUploadModal";
 
 import Register from "./Signup/Register";
 import Login from "./Signup/Login";
+import ChatComponent from "./Chat/ChatComponent";
 
 export {
     Header,
@@ -29,4 +30,5 @@ export {
     Channel,
     CreateChannel,
     ImageUploadModal,
+    ChatComponent
 }

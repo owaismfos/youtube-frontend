@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { FaPaperclip, FaPaperPlane } from 'react-icons/fa';
 import store from '../../app/store';
 
-const ChatComponent = ({ activeUser }) => {
+const ChatComponent = ({ activeUser, isOpen }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [ws, setWs] = useState(null);
-  const[isOpen, setIsOpen] = useState(true);
+  // const[isOpen, setIsOpen] = useState(true);
+  const [file, setFile] = useState(null);
 
-  const chatEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   const state = store.getState();
   const token = state.auth.userData?.accessToken;
   const userId = state.auth.userData?.id;
+
+  // const SOCKET_URL = serverUrl = process.env.WEBSOCKET_URL
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -39,16 +43,46 @@ const ChatComponent = ({ activeUser }) => {
   };
 
   const handleSend = () => {
-    if (input.trim() !== '') {
-      const message = { action: 'post_message', msg: input };
-      ws.send(JSON.stringify(message));
-      // setMessages((prevMessages) => [...prevMessages, message]);
-      setInput(''); // Clear input field
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const mediaType = file.type.startsWith('image/') ? 'image' : 'video'
+        const data = { 
+          type: 'media',
+          mediaType: mediaType,
+          textData: input,
+          mediaFile: reader.result, 
+          action: 'post_message'
+        }
+        console.log("post_data", data)
+        ws.send(JSON.stringify(data))
+        // displayMessage(data, 'sent');
+      };
+      reader.readAsArrayBuffer(file)
+    } else {
+      const data = { 
+        type: 'text',
+        textData: input, 
+        action: 'post_message' 
+      }
+      ws.send(JSON.stringify(data))
     }
-  };
+    setInput('')
+    setFile(null)
+  }
 
   const handleClose = () => {
-    setIsOpen(false); // Close the chat by setting isOpen to false
+    isOpen = false; // Close the chat by setting isOpen to false
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];  // Get the first selected file
+    if (selectedFile) {
+      setFile(selectedFile);  // Set the selected file
+      console.log("File selected:", selectedFile); // Check the file in console
+    } else {
+      console.log("No file selected");
+    }  // Set selected file
   };
 
   useEffect(() => {
@@ -92,17 +126,19 @@ const ChatComponent = ({ activeUser }) => {
   }, [activeUser.id, token]);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); // Scroll to the bottom on new messages
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
-  // console.log("Is Open: ", isOpen)
-  // if (!isOpen) return null;
+  console.log("Is Open: ", isOpen)
+  if (!isOpen) return null;
 
   return (
     <div className="flex flex-col h-[500px] w-full border border-gray-700 rounded-lg shadow-lg bg-gray-800 text-white space-2">
       <div
         key={activeUser.id}
-        className="flex items-center p-2 hover:bg-gray-700 hover:rounded-lg cursor-pointer border-b"
+        className="flex items-center p-2 cursor-pointer border-b"
       >
         <img
           src={activeUser.avatar || '/userdefault.png'}
@@ -112,13 +148,13 @@ const ChatComponent = ({ activeUser }) => {
         <span>{activeUser.fullname}</span>
         <button
           onClick={handleClose}
-          className="ml-auto text-gray-400 hover:text-gray-200"
+          className="ml-auto text-gray-400 hover:bg-gray-900 hover:rounded-full px-2"
         >
           × {/* Close icon */}
         </button>
       </div>
       {/* <div className="p-4 font-bold border-b border-gray-700">Chat with {activeUser.fullname}</div> */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4" ref={chatContainerRef}>
         {messages.map((message) => (
           <div
             key={message?.id}
@@ -141,22 +177,40 @@ const ChatComponent = ({ activeUser }) => {
           </div>
         ))}
       </div>
+
+      {/* Input Section */}
       <div className="flex items-center border-t border-gray-700 p-4">
+        {/* File Select Icon */}
+        <label htmlFor="file-input" className="cursor-pointer">
+          <FaPaperclip className="text-gray-400 hover:text-gray-200 mr-3" size={20} />
+        </label>
+        {/* Hidden file input */}
+        <input
+          id="file-input"
+          type="file"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+
+        {/* Message Input */}
         <input
           type="text"
-          className="flex-1 border w-1/2 rounded-lg p-2 bg-gray-700 text-white outline-none border-none mr-2"
+          className="flex-1 rounded-lg p-2 bg-gray-700 text-white outline-none border-none"
           placeholder="Type a message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
+
+        {/* Send Button */}
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex justify-center items-center"
           onClick={handleSend}
         >
-          Send
+          <FaPaperPlane className="text-white" size={20} />
         </button>
       </div>
     </div>
+    // </div>
   );
 };
 

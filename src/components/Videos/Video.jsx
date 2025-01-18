@@ -144,16 +144,6 @@ export default function Video() {
     }
 
     useEffect(() => {
-        // if (!isTokenValid()) {
-        //     const response = await refreshedTokens()
-        //     if (response) {
-        //         alert('Please refresh your page')
-        //     } else {
-        //         alert('You are not logged in')
-        //     }
-            
-        //     navigator('/')
-        // }
         getVideo()
         postView()
         getSubscribers()

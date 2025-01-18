@@ -5,8 +5,6 @@ import videoService from "../../api/videoapi.js"
 import { addVideosList } from '../../features/video/videoSlice.js'
 import { Card } from '../index.js'
 import { Sidebar } from '../index.js'
-import { isTokenExist, isTokenValid, refreshedTokens } from '../../utils/tokenVerify.js'
-import { addUserInfo } from '../../features/auth/authSlice.js'
 
 export default function Home() {
 	const [loading, setLoading] = useState(true)

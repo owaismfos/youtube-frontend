@@ -11,6 +11,13 @@ export const loginUser = (username, password) => async (dispatch) => {
         });
         console.log(response.data);
         dispatch(login({ userData: response.data.data }));
+        const authData = response.data.data;
+        localStorage.setItem('authToken', authData.accessToken);
+        localStorage.setItem('authRefreshToken', authData.refreshToken);
+        localStorage.setItem('authUsername', authData.user);
+        localStorage.setItem('authId', authData.id);
+        localStorage.setItem('userAvatar', authData.userAvatar);
+        localStorage.setItem('tokenExpiry', authData.tokenExpiry);
         alert("Logged in successfully");
         return true;
     } catch (error) {
@@ -23,7 +30,10 @@ export const loginUser = (username, password) => async (dispatch) => {
 export const logoutUser = () => async (dispatch) => {
     try {
         const response = await axiosInstance.post('/users/logout');
-        dispatch(logout());
+        if (response.data.status_code === 200) {
+            dispatch(logout());
+            localStorage.clear();
+        }
     } catch (error) {
         console.log(error);
     }
