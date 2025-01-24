@@ -46,7 +46,46 @@ const timeSinceUpload = (uploadTime) => {
     }
   }
 
+
+  const formatDate = (dateString) => {
+    // Parse the UTC date string into a Date object
+    const utcDate = new Date(dateString);
+  
+    // Convert UTC to IST by adding the offset (IST is UTC + 5:30)
+    const istOffset = 5 * 60 + 30; // IST offset in minutes
+    const istDate = new Date(utcDate.getTime() + istOffset * 60 * 1000);
+  
+    // Current date and "yesterday" in IST
+    const now = new Date();
+    const istNow = new Date(now.getTime());
+  
+    const istYesterday = new Date(istNow);
+    istYesterday.setDate(istNow.getDate() - 1);
+  
+    // Check if the date is today
+    if (istDate.toDateString() === istNow.toDateString()) {
+      const hours = istDate.getHours().toString().padStart(2, "0");
+      const minutes = istDate.getMinutes().toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+    // Check if the date is yesterday
+    else if (istDate.toDateString() === istYesterday.toDateString()) {
+      const hours = istDate.getHours().toString().padStart(2, "0");
+      const minutes = istDate.getMinutes().toString().padStart(2, "0");
+      return `Yesterday, ${hours}:${minutes}`;
+    }
+    // Otherwise, return the full date in DD/MM/YYYY format and time in HH:MM format
+    else {
+      const dateFormatted = istDate.toLocaleDateString("en-IN");
+      const hours = istDate.getHours().toString().padStart(2, "0");
+      const minutes = istDate.getMinutes().toString().padStart(2, "0");
+      return `${dateFormatted}, ${hours}:${minutes}`;
+    }
+};
+
 export {
     secondsToTime,
     timeSinceUpload,
+    formatDate,
 }
+

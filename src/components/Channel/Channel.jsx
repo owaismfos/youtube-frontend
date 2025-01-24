@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import { Sidebar } from '../index.js'
 import videoService from '../../api/videoapi.js'
 import channelService from '../../api/channelapi.js'
-import userService from '../../api/userapi.js'
+// import userService from '../../api/userapi.js'
 import { secondsToTime, timeSinceUpload } from '../../utils/timeConversion.js'
 import { ImageUploadModal } from '../index.js'
 

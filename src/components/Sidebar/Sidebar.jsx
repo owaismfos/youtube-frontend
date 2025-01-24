@@ -31,20 +31,20 @@ export default function Sidebar({currentPath}) {
         } else if (error?.status_code >= 400) {
             alert(error.message)
         } else {
-            navigate(`/channel/${channel?._id}?${channel?.channelHandle}`)
+            navigate(`/channel/${channel?.id}?${channel?.channelHandle}`)
         }
     }
 
     const getChannelDetails = async () => {
         const channelResponse = await channelService.getChannelDetails()
-        console.log(channelResponse)
+        console.log("Channel Response: ", channelResponse)
         if (channelResponse.status_code >= 400) {
             console.log("I am checking the token exiration")
             setError(channelResponse)
             return null
         }
         setChannel(channelResponse.data)
-        console.log("Channel:  ",channel)
+        // console.log("Channel: ", channel)
     }
 
     useEffect(() => {
@@ -79,7 +79,7 @@ export default function Sidebar({currentPath}) {
                     </li>
                 )}
                 <hr className='my-2 border-gray-400' />
-                {currentPath === `/channel/${channel?._id}` ? (
+                {currentPath === `/channel/${channel?.id}` ? (
                     <li className='bg-gray-800 hover:bg-gray-700 rounded-md py-2'>
                         <Link className='px-3 font-semibold' to={`/channel/${channel?._id}`}>Your channel</Link>
                     </li>

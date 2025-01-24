@@ -37,9 +37,16 @@ export class VideoService {
         }
     }
 
-    async uploadVideo(video) {
+    async uploadVideo(video, onUploadProgress) {
         try {
-            const response = await axiosInstance.post('/videos/upload-video', video);
+            const response = await axiosInstance.post('/videos/upload-video', video, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (progressEvent) => {
+                    const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+                    onUploadProgress(progress);
+                },
+                
+            });
             return response.data;
         } catch (error) {
             return error.response.data;

@@ -11,25 +11,48 @@ import { updateReduxState } from './utils/tokenHandle.js'
 function App() {
     const userStatus = useSelector(state => state.auth.status)
 
-    // const [isChatOpen, setIsChatOpen] = useState(true);
-    const [activeUser, setActiveUser] = useState(null);
-    //const users = ['Alice', 'Bob', 'Charlie'];
+    const [isOpen, setIsOpen] = useState(false)
+    const [activeUser, setActiveUser] = useState(null)
     const [users, setUsers] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [query, setQuery] = useState('')
+    const [searchResults, setSearchResults] = useState([])
 
     const dispatch = useDispatch()
 
     const handleUserClick = (user) => {
-      setActiveUser(user);
+      setActiveUser(user)
     };
+
+    const toggleChatSection = () => {
+      setIsOpen(!isOpen)
+    }
 
     const getUsersList = async () => {
       try {
         const res = await authService.userList();
-        console.log('Users: ', res.data);  // Use res.data to get the response body
+        console.log('Users: ', res.data)  // Use res.data to get the response body
         setUsers(res.data)
       } catch (error) {
-        console.error('Failed to fetch users', error);
+        console.error('Failed to fetch users', error)
       }
+    }
+
+    const getUserSearch = async (q) => {
+      try {
+        setIsLoading(true)
+        const res = await authService.userSearch(q)
+        console.log('Users: ', res.data)  // Use res.data to get the response body
+        setSearchResults(res.data)
+        // console.log()
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Failed to fetch users', error)
+      }
+    }
+
+    const closeChat = () => {
+      setActiveUser(null)
     }
 
     useEffect(() => {
@@ -38,6 +61,12 @@ function App() {
       }
       getUsersList();
     }, [userStatus])
+
+    useEffect(() => {
+      if (query.length >=3) {
+        getUserSearch(query)
+      }
+    }, [query])
 
     return (
         <Router>
@@ -63,31 +92,76 @@ function App() {
                     )}
                 </Routes>
             </div>
-            {userStatus && users && Array.isArray(users) && (
+            <button
+              onClick={toggleChatSection}
+              className="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-800"
+            >
+              {isOpen ? "Close Chat" : "Open Chat"} {/* Button label changes based on state */}
+            </button>
+            {isOpen && userStatus && users && Array.isArray(users) && (
                 <div className="fixed bottom-4 right-4 w-80 h-[500px] bg-gray-800 border border-gray-700 rounded-lg shadow-lg text-white">
-                  <div className="p-4 border-b border-gray-700 font-bold">Users For Chat</div>
-                  <div className="p-4">
-                    {users.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center p-2 hover:bg-gray-700 hover:rounded-lg cursor-pointer"
-                        onClick={() => handleUserClick(user)}
+                  <div className="p-4 border-b border-gray-700">
+                    {/* Header with Title and Close Button */}
+                    <div className="flex justify-between items-center">
+                      <span>Users For Chat</span>
+                      <button
+                        onClick={toggleChatSection} // Close button logic
+                        className="text-gray-400 hover:text-white"
                       >
-                        <img
-                          src={user.avatar || '/userdefault.png'}
-                          alt={user.fullname}
-                          className="w-10 h-10 rounded-full mr-4"
-                        />
-                        <span>{user.fullname}</span>
-                      </div>
-                    ))}
+                        ✖ {/* Close icon */}
+                      </button>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        placeholder="Search..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="w-full bg-gray-700 text-white py-1 px-3 rounded-xl focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    {query.length >= 3 ? (
+                      searchResults.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center p-2 hover:bg-gray-700 hover:rounded-lg cursor-pointer"
+                          onClick={() => handleUserClick(user)}
+                        >
+                          <img
+                            src={user.avatar || '/userdefault.png'}
+                            alt={user.fullname}
+                            className="w-10 h-10 rounded-full mr-4"
+                          />
+                          <span>{user.fullname}</span>
+                        </div>
+                      ))
+                    ): (
+                      users.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center p-2 hover:bg-gray-700 hover:rounded-lg cursor-pointer"
+                          onClick={() => handleUserClick(user)}
+                        >
+                          <img
+                            src={user.avatar || '/userdefault.png'}
+                            alt={user.fullname}
+                            className="w-10 h-10 rounded-full mr-4"
+                          />
+                          <span>{user.fullname}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
             )}
 
             {activeUser && (
               <div className="fixed bottom-4 right-96 w-1/3">
-                <ChatComponent activeUser={activeUser} isOpen={true} />
+                <ChatComponent activeUser={activeUser} onClose={closeChat} />
               </div>
             )}
         </Router>

@@ -70,6 +70,16 @@ class AuthService {
             return error.response.data;
           }
     }
+
+    async userSearch(query) {
+        try {
+            const response = await axiosInstance.get(`/users/user-search?query=${query}`);
+            console.log('Search Results: ', response.data);  // Use res.data to get the response body
+            return response.data;
+          } catch (error) {
+            return error.response.data;
+          }
+    }
 }
 
 const authService = new AuthService();

@@ -63,13 +63,13 @@ export default function Home() {
 				) : (
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gab-4">
 					{videosList.map((video, index) => (
-						<Link key={video._id} to={`/video-play/${video.channel.channelId}&${video.channel.channelHandle}/${video._id}`}>
+						<Link key={video._id} to={`/video-play/${video.channel.channelId}&${video.channel.channelHandle}/${video.id}`}>
 							<Card
 								imageUrl={video.thumbnailUrl}
 								title={video.title}
 								views={makeViews(video.views)}
 								timestamp={video.duration}
-								profile={video.channel.channelAvatarUrl}
+								profile={video.channel.channelAvatarUrl  || '/userdefault.png'}
 								chennelName={video.channel.channelName}
 								timeUpload={video.createdAt}
 							/>

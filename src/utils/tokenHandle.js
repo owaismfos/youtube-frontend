@@ -2,16 +2,15 @@ import { login } from "../features/auth/authSlice";
 
 
 const isTokenValid = (tokenExpiry) => {
-    // const token = localStorage.getItem('accessToken');
-    // const tokenExpiry = localStorage.getItem('tokenExpiry');
     if (new Date(tokenExpiry) > new Date()) {
         return true;
     }
     return false;
 }
 
-const updateReduxState = (dispatch) => {
-    if (isTokenValid(localStorage.getItem('tokenExpiry'))) {
+export const updateReduxState = (dispatch) => {
+    if (!isTokenValid(localStorage.getItem('tokenExpiry'))) {
+        console.log("Check token expiry date");
         localStorage.clear();
     } else {
         const userData = {
@@ -26,4 +25,4 @@ const updateReduxState = (dispatch) => {
     }
 }
 
-export {updateReduxState};
+// export {updateReduxState};
