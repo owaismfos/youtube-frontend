@@ -17,7 +17,7 @@ export default function Video() {
     const [subscribers, setSubscribers] = useState('0')
     const [isSubscribed, setIsSubscribed] = useState(false)
     const [loggedInAvatar, setLoggedInAvatar] = useState(null)
-    // const [commentsList, setCommentsList] = useState([])
+    const [commentsList, setCommentsList] = useState([])
     const [comment, setComment] = useState('')
     const [likesCount, setLikesCount] = useState(0)
     const [isLiked, setIsLiked] = useState(false)
@@ -28,22 +28,22 @@ export default function Video() {
 
     const dispatch = useDispatch()
     const userData = useSelector(state => state.auth.userData)
-    const commentsList = useSelector(state => state.comments.commentsList)
-    const videosList = useSelector(state => state.videos.videosList)
+    // const commentsList = useSelector(state => state.comments.commentsList)
+    // const videosList = useSelector(state => state.videos.videosList)
 
     const getVideo = async () => {
-        // const response = await videoService.getVideo(videoId)
-        for (let i = 0; i < videosList.length; i++) {
-            if (videosList[i]._id === videoId) {
-                setVideo(videosList[i])
-                console.log(videosList[i])
-                break
-            }
-        }
-        // setVideo(response.data)
-        // setUser(response.data.user)
-        // setChannel(response.data.channel)
-        // console.log(response.data)
+        const response = await videoService.getVideo(videoId)
+        // for (let i = 0; i < videosList.length; i++) {
+        //     if (videosList[i]._id === videoId) {
+        //         setVideo(videosList[i])
+        //         console.log(videosList[i])
+        //         break
+        //     }
+        // }
+        setVideo(response.data)
+        setUser(response.data.user)
+        setChannel(response.data.channel)
+        console.log("Video Response: ", response.data)
     }
 
     const postView = async () => {
@@ -106,11 +106,11 @@ export default function Video() {
 
     const getComments = async () => {
         const response = await videoService.getComments(videoId)
-        console.log(response)
+        console.log("Comments: ", response)
         if (response.success) {
             dispatch(addCommentsList(response.data)) 
         }
-        // setCommentsList(response.data)
+        setCommentsList(response.data)
     }
 
     const postComment = async (e) => {
@@ -120,6 +120,7 @@ export default function Video() {
         if (response.success) {
             dispatch(addComment(response.data))
         }
+        setCommentsList((prevComment) => [...prevComment, response.data])
         setComment('')
     }
 
@@ -162,7 +163,7 @@ export default function Video() {
                     {/* <p className='my-2'>{views} views</p> */}
                     <div className='flex'>
                         <div className='w-1/2 my-4 flex my-auto'>
-                            <img className='w-10 h-10 rounded-full' src={video?.channel?.channelAvatarUrl} alt="" />
+                            <img className='w-10 h-10 rounded-full' src={video?.channel?.channelAvatarUrl || '/userdefault.png'} alt="" />
                             <div className='mx-3'>
                                 <Link className='text-lg font-semibold text-gray-200' to={`/channel/${video?.channel?.channelId}?${video?.channel?.channelHandle}`}>{video?.channel?.channelName}</Link>
                                 <p className='text-sm text-gray-400'>{subscribers} Subscribers</p>
@@ -246,14 +247,14 @@ export default function Video() {
             </div>
             
             {/* Second column (1/3 width) */}
-            <div className="w-1/3">
+            {/* <div className="w-1/3">
                 <div className="flex my-3">
                     <div className="w-2/3">
                         <div className="relative max-w-md rounded-lg overflow-hidden cursor-pointer">
-                            {/* Image */}
+                            
                             <img className="w-48 xs:w-16 sm:h-28 xs:h-20 object-cover rounded-lg" src={"http://res.cloudinary.com/owaisamu20/image/upload/v1707903574/thumbnail_upload/yrgedp4qhn1vrtfzz2qw.jpg"} alt="Card Image" />
 
-                            {/* Overlay */}
+                            
                             <div className="absolute bottom-1 right-2 px-1 rounded-md bg-gray-700">
                                 <p className="text-xs font-semibold text-white">{secondsToTime(90)}</p>
                             </div>
@@ -265,7 +266,7 @@ export default function Video() {
                         <p className='text-sm text-gray-300'>12K views</p>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -81,7 +81,7 @@ export default function Sidebar({currentPath}) {
                 <hr className='my-2 border-gray-400' />
                 {currentPath === `/channel/${channel?.id}` ? (
                     <li className='bg-gray-800 hover:bg-gray-700 rounded-md py-2'>
-                        <Link className='px-3 font-semibold' to={`/channel/${channel?._id}`}>Your channel</Link>
+                        <Link className='px-3 font-semibold' to={`/channel/${channel?.id}`}>Your channel</Link>
                     </li>
                 ) : (
                     <li className='hover:bg-gray-800 rounded-md py-2 cursor-pointer' onClick={navigateYourChannel}>

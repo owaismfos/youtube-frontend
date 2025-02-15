@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.message-container {
+    display: flex;
+    flex-direction: column; /* Align children in a column */
+    width: 100%; /* Make sure it spans the full width of the container */
+  }
+  
+  .audio-container {
+    display: flex;
+    justify-content: center; /* Center the audio controls horizontally */
+    width: 100%;
+  }
+  
+  .audio-player {
+    width: 100%;
+    height: 50px; /* Or any other height you prefer */
+  }

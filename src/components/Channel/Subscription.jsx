@@ -37,7 +37,7 @@ function Subscription() {
                             <Link key={channel._id} to={`/channel/${channel.id}?${channel.channelHandle}`}>
                                 <div className='flex items-center'>
                                     <div className='w-1/3'>
-                                        <img src={channel.channelAvatarUrl} alt="" className='h-20 w-20 rounded-full' />
+                                        <img src={channel.channelAvatarUrl || '/userdefault.png'} alt="" className='h-20 w-20 rounded-full' />
                                     </div>
                                     <div className='w-2/3'>
                                         <p className='text-white text-xl font-bold'>{channel.channelName}</p>

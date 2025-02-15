@@ -30,7 +30,7 @@ export class VideoService {
 
     async postView(videoId) {
         try {
-            const response = await axiosInstance.post(`/videos/update-views/${videoId}`);
+            const response = await axiosInstance.put(`/videos/update-views/${videoId}`);
             return response.data;
         } catch (error) {
             return error.response.data;
