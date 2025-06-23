@@ -30,9 +30,11 @@ function App() {
 
     const getUsersList = async () => {
       try {
-        const res = await authService.userList();
-        console.log('Users: ', res.data)  // Use res.data to get the response body
-        setUsers(res.data)
+        if (localStorage.getItem('authToken')) {
+          const res = await authService.userList();
+          console.log('Users: ', res.data)  // Use res.data to get the response body
+          setUsers(res.data)
+        }
       } catch (error) {
         console.error('Failed to fetch users', error)
       }
