@@ -14,6 +14,7 @@ import ImageUploadModal from "./Modal/ImageUploadModal";
 import Register from "./Signup/Register";
 import Login from "./Signup/Login";
 import ChatComponent from "./Chat/ChatComponent";
+import ForgotPassword from "./Signup/ForgotPassword";
 
 export {
     Header,
@@ -30,5 +31,6 @@ export {
     Channel,
     CreateChannel,
     ImageUploadModal,
-    ChatComponent
+    ChatComponent,
+    ForgotPassword,
 }

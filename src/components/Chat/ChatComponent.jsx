@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux'
 import { FaPaperclip, FaPaperPlane, FaSpinner, FaMicrophone, FaStopCircle } from 'react-icons/fa';
 import ReactPlayer from 'react-player'
 import store from '../../app/store';
 import { formatDate } from '../../utils/timeConversion.js';
+import { addUsersList } from '../../features/chat/chatUserListSlice';
+
 
 const ChatComponent = ({ activeUser, onClose }) => {
+  const dispatch = useDispatch()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [ws, setWs] = useState(null)
@@ -317,6 +321,9 @@ const ChatComponent = ({ activeUser, onClose }) => {
           } else if (messages.data.type === 'ice-candidate') {
             await peerRef.current.addIceCandidate(new RTCIceCandidate(data.candidate))
           }
+        } else if (messages.data.action === 'user_list') {
+          console.log("userList: ", messages.data)
+          dispatch(addUsersList(messages.data.data))
         }
       };
 
@@ -351,7 +358,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
       >
         {/* User Avatar */}
         <img
-          src={activeUser.avatar || '/userdefault.png'}
+          src={activeUser.avatarUrl || '/userdefault.png'}
           alt={activeUser.fullname}
           className="w-10 h-10 rounded-full mr-4"
         />

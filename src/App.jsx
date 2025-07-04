@@ -2,9 +2,10 @@ import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import { ChatComponent, Header, Home, About, Subscription, Video, Login, Register, VideoUpload, Channel, CreateChannel } from './components/index.js'
+import { ForgotPassword, ChatComponent, Header, Home, About, Subscription, Video, Login, Register, VideoUpload, Channel, CreateChannel } from './components/index.js'
 import authService from './api/userapi.js'
 import { login } from './features/auth/authSlice.js';
+import { addUsersList } from './features/chat/chatUserListSlice.js'
 import { updateReduxState } from './utils/tokenHandle.js'
 // import ChatComponent from './ChatComponent';
 
@@ -13,12 +14,14 @@ function App() {
 
     const [isOpen, setIsOpen] = useState(false)
     const [activeUser, setActiveUser] = useState(null)
-    const [users, setUsers] = useState([])
+    // const [users, setUsers] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [query, setQuery] = useState('')
     const [searchResults, setSearchResults] = useState([])
 
     const dispatch = useDispatch()
+
+    const users = useSelector(state => state.usersList.usersList)
 
     const handleUserClick = (user) => {
       setActiveUser(user)
@@ -33,7 +36,8 @@ function App() {
         if (localStorage.getItem('authToken')) {
           const res = await authService.userList();
           console.log('Users: ', res.data)  // Use res.data to get the response body
-          setUsers(res.data)
+          // setUsers(res.data)
+          dispatch(addUsersList(res.data))
         }
       } catch (error) {
         console.error('Failed to fetch users', error)
@@ -90,6 +94,7 @@ function App() {
                         <Route path='/login' Component={Login} />
                         <Route path='/register' Component={Register} />
                         <Route path='/about' Component={About} />
+                        <Route path='/forgot-password' Component={ForgotPassword} />
                         </>
                     )}
                 </Routes>
@@ -134,7 +139,7 @@ function App() {
                           onClick={() => handleUserClick(user)}
                         >
                           <img
-                            src={user.avatar || '/userdefault.png'}
+                            src={user.avatarUrl || '/userdefault.png'}
                             alt={user.fullname}
                             className="w-10 h-10 rounded-full mr-4"
                           />
@@ -149,11 +154,16 @@ function App() {
                           onClick={() => handleUserClick(user)}
                         >
                           <img
-                            src={user.avatar || '/userdefault.png'}
+                            src={user.avatarUrl || '/userdefault.png'}
                             alt={user.fullname}
                             className="w-10 h-10 rounded-full mr-4"
                           />
                           <span>{user.fullname}</span>
+                          {user.unreadMessageCount > 0 && (
+                            <div className="ml-2 bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                              {user.unreadMessageCount}
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
