@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import { ForgotPassword, ChatComponent, Header, Home, About, Subscription, Video, Login, Register, VideoUpload, Channel, CreateChannel } from './components/index.js'
 import authService from './api/userapi.js'
 import { login } from './features/auth/authSlice.js';
-import { addUsersList } from './features/chat/chatUserListSlice.js'
+import { addUsersList } from './features/chat/chatSlice.js'
 import { updateReduxState } from './utils/tokenHandle.js'
 // import ChatComponent from './ChatComponent';
 

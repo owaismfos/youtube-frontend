@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const chatUserListSlice = createSlice({
+const chatSlice = createSlice({
     name: 'users',
     initialState: {
         isUsers: false,
@@ -17,6 +17,6 @@ const chatUserListSlice = createSlice({
     }
 })
 
-export const { addUsersList } = chatUserListSlice.actions;
+export const { addUsersList } = chatSlice.actions;
 
-export default chatUserListSlice.reducer;
+export default chatSlice.reducer;

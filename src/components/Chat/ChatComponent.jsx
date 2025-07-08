@@ -4,7 +4,7 @@ import { FaPaperclip, FaPaperPlane, FaSpinner, FaMicrophone, FaStopCircle } from
 import ReactPlayer from 'react-player'
 import store from '../../app/store';
 import { formatDate } from '../../utils/timeConversion.js';
-import { addUsersList } from '../../features/chat/chatUserListSlice';
+import { addUsersList } from '../../features/chat/chatSlice';
 
 
 const ChatComponent = ({ activeUser, onClose }) => {
@@ -21,7 +21,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
   const [isRecording, setIsRecording] = useState(false)  // To track recording state
   // const [audioBlob, setAudioBlob] = useState(null)   // To store audio data
   const [recordingTime, setRecordingTime] = useState(0)  // Timer for recording
-  // const [isFocused, setIsFocused] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   // const [typingUser, setTypingUser] = useState(null)
   const [progress, setProgress] = useState(0)
@@ -276,7 +276,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
   useEffect(() => {
     if (activeUser.id && token) {
       // Establish WebSocket connection when activeUser or token changes
-      const socket = new WebSocket(`ws://localhost:8080/ws/chat/?receiverId=${activeUser.id}&token=${token}`);
+      const socket = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/?receiverId=${activeUser.id}&token=${token}`);
       setWs(socket);
 
       socket.onopen = () => {

@@ -2,7 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import videoReducer from '../features/video/videoSlice';
 import commentReducer from '../features/video/commentSlice';
-import chatUserListReducer from '../features/chat/chatUserListSlice';
+import chatReducer from '../features/chat/chatSlice';
 
 // Retrieve the stored state from localStorage
 // const storedState = localStorage.getItem('reduxState');
@@ -20,7 +20,7 @@ const store = configureStore({
         auth: authReducer,
         videos: videoReducer,
         comments: commentReducer,
-        usersList: chatUserListReducer
+        usersList: chatReducer
     },
     // preloadedState
 });
