@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import VideoProgressBar from './VideoProgressBar';
+import videojs from 'video.js'
+import 'video.js/dist/video-js.css'
 
 const VideoPlayer = ({ videoSrc }) => {
 	const videoRef = useRef(null)
@@ -115,13 +117,13 @@ const VideoPlayer = ({ videoSrc }) => {
 	return (
 		<div className="mt-3">
 			<div
-			className={`relative w-full ${showControls ? '' : 'cursor-none'}`}
-			onMouseMove={handleMouseMove}
-			onMouseLeave={handleMouseLeave}
+				className={`relative w-full ${showControls ? '' : 'cursor-none'}`}
+				onMouseMove={handleMouseMove}
+				onMouseLeave={handleMouseLeave}
 			>
 			<video
 				ref={videoRef}
-				className="rounded-xl w-full relative"
+				className="rounded-xl w-full relative video-js vjs-default-skin"
 				src={videoSrc}
 				onEnded={() => setIsPlaying(false)}
 				onPlay={() => setIsPlaying(true)}

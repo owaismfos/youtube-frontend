@@ -69,7 +69,6 @@ const VideoUpload = () => {
         if (!userStatus) {
             alert("You're not logged in.")
             // navigate("/login")
-            // window.location.href = "/login"
         }
     }, [uploadProgress])
 

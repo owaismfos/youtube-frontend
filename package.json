@@ -14,13 +14,15 @@
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.5",
     "dotenv": "^16.4.7",
+    "hls.js": "^1.6.7",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.4.0",
     "react-player": "^2.16.0",
     "react-redux": "^9.0.4",
-    "react-router-dom": "^6.21.1"
+    "react-router-dom": "^6.21.1",
+    "video.js": "^8.23.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
