@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, login, addUserInfo } from "../../features/auth/authSlice";
 import { logoutUser } from "../../features/auth/authActions";
@@ -9,10 +9,6 @@ function Header() {
     const status = useSelector((state) => state.auth.status);
     const userData = useSelector((state) => state.auth.userData);
     const userInfo = useSelector((state) => state.auth.userInfo);
-
-    // const [isLogin, setLogin] = useState(false);
-    const [user, setUser] = useState({});
-
     const dispatch = useDispatch();
 
     // user logout action
@@ -29,38 +25,74 @@ function Header() {
             console.log(userResponse.data);
         }
         const dropdownMenu = document.getElementById("dropdown-menu");
+        const isHidden = dropdownMenu.classList.contains("hidden");
+
         dropdownMenu.classList.toggle("hidden");
+
+        // Remove any previous listener to avoid duplication
+        document.removeEventListener("click", handleOutsideClick);
+
+        // If dropdown just opened, start listening for outside clicks
+        if (isHidden) {
+            setTimeout(() => {
+                document.addEventListener("click", handleOutsideClick);
+            }, 0);
+        }
     };
 
+    const handleOutsideClick = (event) => {
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        const button = document.getElementById("dropdown-button");
+
+        if (
+            dropdownMenu &&
+            !dropdownMenu.contains(event.target) &&
+            !button.contains(event.target)
+        ) {
+            dropdownMenu.classList.add("hidden");
+            document.removeEventListener("click", handleOutsideClick);
+        }
+    };
+
+    // useEffect(() => {
+    //     const root = window.document.documentElement;
+    //     if (theme === 'dark') {
+    //         root.classList.add('dark');
+    //     } else {
+    //         root.classList.remove('dark');
+    //     }
+    //     localStorage.setItem('theme', theme);
+    // }, [theme]);
+
     return (
-    <nav className="bg-gray-900 px-5 py-2 fixed w-full top z-10">
+    <nav className="bg-gray-900 px-5 py-2 fixed w-full top z-10 items-center">
         <div className="container mx-auto flex items-center justify-between">
         {/* Left section */}
         <div className="text-white font-bold text-xl">
             <Link to="/">
-            <span className="text-white">You</span>
-            <span className="text-red-500">Tube</span>
+            <span className="text-white">Stream</span>
+            <span className="text-green-500">Talk</span>
             </Link>
         </div>
 
         {/* Middle section */}
-        <div className="flex-grow flex items-center justify-center">
+        <div className="flex-grow md:flex items-center justify-center hidden">
             <input
-            type="text"
-            placeholder="Search"
-            className="px-3 py-2 w-1/2 rounded-l-3xl bg-gray-800 border border-gray-700 focus:outline-none text-white placeholder-gray-500"
+                type="text"
+                placeholder="Search"
+                className="px-3 py-2 w-1/2 rounded-l-3xl bg-gray-800 border border-gray-700 focus:outline-none text-white placeholder-gray-500"
             />
             <i className="fas fa-search text-white bg-gray-700 border-gray-600 border px-6 py-3 rounded-r-3xl cursor-pointer"></i>
         </div>
 
         {/* Right section */}
-        <div className="flex">
+        <div className="flex items-center">
             <Link to="/upload-video">
             <i className="fas fa-video text-white"></i>
             </Link>
             {status ? (
             <div className="relative">
-                <button className="text-white" onClick={toggleDropdown}>
+                <button className="text-white" id="dropdown-button" onClick={toggleDropdown}>
                 <img
                     src={userData.userAvatar}
                     alt="Profile Image"
@@ -86,7 +118,7 @@ function Header() {
                 {userInfo?.isChannel ? (
                     <Link
                     to={`/channel/${userInfo.channelId}?${userInfo.channelHandle}`}
-                    className="block px-4 py-2 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2"
+                    className="block py-2 px-4 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2"
                     >
                     Go To Your Channel
                     </Link>
@@ -98,6 +130,10 @@ function Header() {
                     Create Your Channel
                     </Link>
                 )}
+                <p className='block py-2 px-4 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2'>
+                    <Link to="/subscription">Subscriptions</Link>
+                </p>
+
                 <hr className="border-gray-500 py-1" />
                 <p
                     className="block px-4 cursor-pointer py-2 hover:bg-gray-800 hover:mr-2"

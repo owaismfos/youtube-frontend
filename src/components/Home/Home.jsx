@@ -52,16 +52,17 @@ export default function Home() {
 
 	
 	return (
-		<div className='flex flex-1 h-screen'>
+		<div className='flex h-screen py-4'>
 			{/* Left Section */}
 			<Sidebar currentPath={currentPath} />
 
 			{/* Right Section */}
-			<main className="flex-grow p-4 ml-48">
+			<main className="flex-1 overflow-y-auto">
 				{loading? (
                     <div className="flex justify-center items-center h-screen text-white">Loading...</div>
 				) : (
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gab-4">
+				<div className="max-w-screen-xl mx-auto w-full pr-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-start">
 					{videosList.map((video, index) => (
 						<Link key={video._id} to={`/video-play/${video.channel.channelId}&${video.channel.channelHandle}/${video.id}`}>
 							<Card
@@ -75,6 +76,7 @@ export default function Home() {
 							/>
 						</Link>
 					))}
+				</div>
 				</div>
 				)}
 			</main>

@@ -58,7 +58,7 @@ export default function Sidebar({currentPath}) {
     }, [userStatus])
 
     return (
-        <aside className="w-1/6 p-4 fixed h-full overflow-y-auto text-white">
+        <aside className="h-full w-64 p-4 text-white hidden md:block">
             <ul>
                 {currentPath === '/' ? (
                     <li className='bg-gray-800 hover:bg-gray-700 rounded-md py-2 cursor-pointer'>

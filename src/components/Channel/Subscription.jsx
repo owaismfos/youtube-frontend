@@ -27,28 +27,26 @@ function Subscription() {
             <Sidebar currentPath={currentPath} />
 
             {/* Right Section */}
-            <main className="p-4 ml-48 ">
-                <div className="px-24 py-7">
-                    <h1 className='text-white text-xl font-bold mb-5'>Channels Subscribed By You 
-                        <span className='mx-5'>{channelList.length}</span>
-                    </h1>
-                    {channelList.map((channel) => (
-                        <div className='hover:bg-gray-600 py-3 px-6 rounded-md'>
-                            <Link key={channel._id} to={`/channel/${channel.id}?${channel.channelHandle}`}>
-                                <div className='flex items-center'>
-                                    <div className='w-1/3'>
-                                        <img src={channel.channelAvatarUrl || '/userdefault.png'} alt="" className='h-20 w-20 rounded-full' />
-                                    </div>
-                                    <div className='w-2/3'>
-                                        <p className='text-white text-xl font-bold'>{channel.channelName}</p>
-                                        <p className='text-gray-400'>@{channel.channelHandle}</p>
-                                        <p className='text-gray-500'>{timeSinceUpload(channel.createdAt)}</p>
-                                    </div>
+            <main className='py-4 px-6'>
+                <h1 className='text-white text-xl font-bold'>Channels Subscribed By You 
+                    <span className='mx-5'>{channelList.length}</span>
+                </h1>
+                {channelList.map((channel) => (
+                    <div className='hover:bg-gray-600 py-3 rounded-md'>
+                        <Link key={channel._id} to={`/channel/${channel.id}?${channel.channelHandle}`}>
+                            <div className='flex items-center'>
+                                <div className='w-1/3'>
+                                    <img src={channel.channelAvatarUrl || '/userdefault.png'} alt="" className='h-20 w-20 rounded-full' />
                                 </div>
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+                                <div className='w-2/3'>
+                                    <p className='text-white text-xl font-bold'>{channel.channelName}</p>
+                                    <p className='text-gray-400'>@{channel.channelHandle}</p>
+                                    <p className='text-gray-500'>{timeSinceUpload(channel.createdAt)}</p>
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+                ))}
             </main>
         </div>
     )

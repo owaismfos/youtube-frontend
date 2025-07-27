@@ -15,6 +15,7 @@ function Channel() {
     const [currentUser, setCurrentUser] = useState(false)
     const [videosList, setVideosList] = useState([])
     const [subscriberCount, setSubscriberCount] = useState(0)
+    const [viewsCount, setViewsCount] = useState(0)
     const [isSubscribed, setIsSubscribed] = useState(false)
     const [channel, setChannel] = useState({})
     const [channelBackgroundUrl, setChannelBackgroundUrl] = useState(null)
@@ -57,6 +58,7 @@ function Channel() {
         console.log(response)
         setChannelBackgroundUrl(response.data)
         setLoading(false)
+        setIsBackgroundModalOpen(false)
     }
 
     const uploadAvatarImage = async () => {
@@ -67,6 +69,7 @@ function Channel() {
         console.log(response)
         setChannelAvatarUrl(response.data)
         setLoading(false)
+        setAvatarModalOpen(false)
     }
 
     const changeChannelName = async () => {
@@ -76,6 +79,7 @@ function Channel() {
         setChannel({...channel, channelName:response.data})
         setLoading(false)
         console.log(channel)
+        setIsChannelNameModalOpen(false)
     }
 
     const channelDetails = async () => {
@@ -85,14 +89,17 @@ function Channel() {
         setChannelBackgroundUrl(response.data.channelBackgroundUrl)
         setChannelAvatarUrl(response.data.channelAvatarUrl)
         setCurrentUser(response.data.currentUser)
+        setSubscriberCount(response.data.totalSubscribers)
+        setIsSubscribed(response.data.isSubscribed)
+        setViewsCount(response.data.totalViews)
     }
 
-    const getSubscribersCount = async () => {
-        const response = await channelService.getSubscribers(channelId)
-        console.log(response)
-        setSubscriberCount(response.data.subscribersCount)
-        setIsSubscribed(response.data.isSubscribed)
-    }
+    // const getSubscribersCount = async () => {
+    //     const response = await channelService.getSubscribers(channelId)
+    //     console.log(response)
+    //     setSubscriberCount(response.data.subscribersCount)
+    //     setIsSubscribed(response.data.isSubscribed)
+    // }
 
     const getVideos = async () => {
         const videos = await videoService.getVideosOfChannel(channelId)
@@ -133,13 +140,13 @@ function Channel() {
 
     useEffect(() => {
         channelDetails()
-        getSubscribersCount()
+        // getSubscribersCount()
         getVideos()
     }, [])
     return (
-        <div className="">
+        <div className="flex h-screen py-4">
             <Sidebar currentPath={location.pathname} />
-            <div className="pl-8 pr-20 ml-56 pt-10">
+            <div className="flex-1 overflow-y-auto px-4 pb-10">
                 <div className='w-full bg-gray-500 rounded-xl'>
                     {currentUser ? (
                         <>
@@ -172,9 +179,35 @@ function Channel() {
                                 <div className="w-12 h-12 border-t-4 border-green-500 border-solid rounded-full animate-spin mx-auto"></div>
                             </div>
                         }
-                        <h1 className="text-xl font-semibold mb-4 mt-5">Upload Channel Background Image</h1>
-                        <input type="file" name="upload" className='p-2 bg-red-500' onChange={e => setBackgroundImageFile(e.target.files[0])} /> <br />
-                        <button className='bg-orange-600 hover:bg-orange-700 px-4 py-2 my-4 text-gray-300 disable' onClick={uploadBackgroundImage}>Upload</button>
+                        <h1 className="text-xl font-semibold text-gray-300 mb-4 mt-5">Upload Channel Background Image</h1>
+                        {/* <input type="file" name="upload" className='p-2 bg-red-500' onChange={e => setBackgroundImageFile(e.target.files[0])} /> <br /> */}
+                        <div>
+                            <label
+                                htmlFor="thumbnailUpload"
+                                className="block w-full border-2 border-dashed border-gray-500 text-center rounded-lg p-6 cursor-pointer hover:border-red-500"
+                            >
+                                {backgroundImageFile ? (
+                                    <p className="text-white">{backgroundImageFile.name}</p>
+                                ) : (
+                                    <>
+                                        <p className="text-gray-400">
+                                            Drag and drop your image here, or click to select
+                                        </p>
+                                        <span className="block mt-2 text-sm text-gray-500">
+                                            (JPG, PNG - Max size: 5MB)
+                                        </span>
+                                    </>
+                                )}
+                                <input
+                                    id="thumbnailUpload"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={e => setBackgroundImageFile(e.target.files[0])}
+                                    accept="image/*"
+                                />
+                            </label>
+                        </div>
+                        <button className='btn-green-md' onClick={uploadBackgroundImage}>Upload</button>
                     </div>
                 </ImageUploadModal>
 
@@ -185,9 +218,35 @@ function Channel() {
                                 <div className="w-12 h-12 border-t-4 border-green-500 border-solid rounded-full animate-spin mx-auto"></div>
                             </div>
                         }
-                        <h1 className="text-xl font-semibold mb-4 mt-5">Upload Channel Avatar Image</h1>
-                        <input type="file" name="upload" className='p-2 bg-red-500' onChange={e => setAvatarImageFile(e.target.files[0])} /> <br />
-                        <button className='bg-orange-600 hover:bg-orange-700 px-4 py-2 my-4 text-gray-300 disable' onClick={uploadAvatarImage}>Upload</button>
+                        <h1 className="text-xl font-semibold text-gray-300 mb-4 mt-5">Upload Channel Avatar Image</h1>
+                        {/* <input type="file" name="upload" className='p-2 bg-red-500' onChange={e => setAvatarImageFile(e.target.files[0])} /> <br /> */}
+                        <div>
+                            <label
+                                htmlFor="thumbnailUpload"
+                                className="block w-full border-2 border-dashed border-gray-500 text-center rounded-lg p-6 cursor-pointer hover:border-red-500"
+                            >
+                                {avatarImageFile ? (
+                                    <p className="text-white">{avatarImageFile.name}</p>
+                                ) : (
+                                    <>
+                                        <p className="text-gray-400">
+                                            Drag and drop your image here, or click to select
+                                        </p>
+                                        <span className="block mt-2 text-sm text-gray-500">
+                                            (JPG, PNG - Max size: 5MB)
+                                        </span>
+                                    </>
+                                )}
+                                <input
+                                    id="thumbnailUpload"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={e => setAvatarImageFile(e.target.files[0])}
+                                    accept="image/*"
+                                />
+                            </label>
+                        </div>
+                        <button className='btn-green-md' onClick={uploadAvatarImage}>Upload</button>
                     </div>
                 </ImageUploadModal>
 
@@ -198,9 +257,15 @@ function Channel() {
                                 <div className="w-12 h-12 border-t-4 border-green-500 border-solid rounded-full animate-spin mx-auto"></div>
                             </div>
                         }
-                        <h1 className="text-xl font-semibold mb-4 mt-5">Change Channel Name</h1>
-                        <input type="text" name="channelName" className='p-2 focus:outline-none' onChange={e => setChannelName(e.target.value)} /> <br />
-                        <button className='bg-orange-600 hover:bg-orange-700 px-4 py-2 my-4 text-gray-300 disable' onClick={changeChannelName}>Change</button>
+                        <h1 className="text-xl font-semibold text-gray-300 mb-4 mt-5">Change Channel Name</h1>
+                        <input 
+                            type="text" 
+                            name="channelName" 
+                            placeholder='Enter Channel Name'
+                            className='w-72 p-2 bg-gray-800 rounded-lg text-white font-semibold focus:outline-none' 
+                            onChange={e => setChannelName(e.target.value)} 
+                        /> <br />
+                        <button className='btn-green-md' onClick={changeChannelName}>Change</button>
                     </div>
                 </ImageUploadModal>
                 <div className="py-7">
@@ -242,7 +307,8 @@ function Channel() {
                                 <h1 className='text-white text-4xl font-semibold'>{channel.channelName}</h1>
                             )}
                             <p className='text-gray-400 text-xl py-1'>@{channel.channelHandle}</p>
-                            <p className='text-gray-400 text-xl pb-4'>{makeSubscriberCount(subscriberCount)} subscribers . {videosList.length} videos</p>
+                            
+                            <p className='text-gray-400 text-xl pb-4'>{makeSubscriberCount(subscriberCount)} subscribers . {videosList.length} videos . {viewsCount} views</p>
                             {isSubscribed? (
                                 <button className='py-2 px-7 bg-gray-500 text-gray-300 text-lg font-medium rounded-3xl'
                                 // onClick={postUnsubscribe}
@@ -256,7 +322,7 @@ function Channel() {
                     </div>
                     <hr className='border-gray-400 mt-7' />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gab-4">
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gab-4">
                     {videosList.map(video =>(
                         <div key={video._id} className="relative max-w-md rounded-lg overflow-hidden m-3 cursor-pointer">
                             {/* Image */}

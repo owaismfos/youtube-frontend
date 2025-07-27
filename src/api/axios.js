@@ -6,7 +6,7 @@ const instance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_URL
 });
 
-print(import.meta.env.SERVER_URL)
+console.log("Server Url: ", import.meta.env.VITE_SERVER_URL)
 
 // Add a request interceptor to the instance and include the token in the headers
 instance.interceptors.request.use((config) => {
