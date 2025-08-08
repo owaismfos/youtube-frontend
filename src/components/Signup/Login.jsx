@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../api/userapi';
 import { login } from '../../features/auth/authSlice'
@@ -23,6 +23,46 @@ const Login = () => {
     }
     setLoading(false)
   };
+
+  async function handleCredentialResponse(response) {
+      // response.credential is the id_token
+      // ✅ Correct property name
+      const idToken = response.credential;
+      
+      // 1. Log the whole object
+      console.log("Google raw response:", response);
+
+      // 2. Log token separately
+      console.log("ID Token:", idToken);
+
+      // 3. (Optional) Decode the JWT on frontend to inspect its contents
+      const payload = JSON.parse(atob(idToken.split(".")[1]));
+      console.log("Decoded ID Token payload:", payload);
+
+      // try {
+      //     const res = await fetch("/api/auth/google/", {
+      //         method: POST,
+      //         headers: {"Content-Type": "application/json"},
+      //         body: JSON.stringify({id_token: idToken})
+      //     })
+      // } catch (error) {
+          
+      // }
+  }
+
+  const startGoogleLogin = () => {
+    google.accounts.id.prompt(); // triggers Google popup
+  };
+
+  useEffect(() => {
+    console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID)
+    if (window.google) {
+      google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -70,6 +110,21 @@ const Login = () => {
         </div>
         <p className="text-gray-300 py-2">Not a User ? <Link className='text-blue-700 hover:text-blue-800' to="/register">Please Register</Link></p>
       </form>
+
+      <div className="flex justify-center mt-4">
+        <button
+          type="button"
+          onClick={startGoogleLogin}
+          className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100"
+        >
+          <img
+            src="https://www.svgrepo.com/show/355037/google.svg"
+            alt="Google"
+            className="w-5 h-5 rounded-full"
+          />
+          {/* <span className="text-gray-700 font-medium"></span> */}
+        </button>
+      </div>
     </div>
     </>
   )
