@@ -86,7 +86,7 @@ function App() {
                         <Route path='/upload-video' Component={VideoUpload} />
                         <Route path='/subscription' Component={Subscription} />
                         <Route path='/video-play/:channelInfo/:videoId' Component={Video} />
-                        <Route path='/channel/:channelId' Component={Channel} />
+                        {/* <Route path='/channel/:channelId' Component={Channel} /> */}
                         <Route path='/create-channel' Component={CreateChannel} />
                         </>
                     ): (
@@ -97,6 +97,7 @@ function App() {
                         <Route path='/forgot-password' Component={ForgotPassword} />
                         </>
                     )}
+                    <Route path='/channel/:channelId' Component={Channel} />
                 </Routes>
             </div>
             <button

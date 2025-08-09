@@ -82,10 +82,11 @@ class ChannelService {
         }
     }
 
-    async changeChannelName(channelName) {
+    async changeChannelName(channelName, channelTags) {
         try {
             const response = await axiosInstance.post('/channels/change-channel-name', {
-                'channelName': channelName
+                'channelName': channelName,
+                tags: channelTags
             });
             return response.data;
         } catch (error) {
