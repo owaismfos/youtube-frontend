@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 
-export const FancyImageUpload = ({ label, aspectRatio = 16 / 9, onChange, className }) => {
-  const [preview, setPreview] = useState(null);
+export const FancyImageUpload = ({ label, aspectRatio = 16 / 9, file, onChange, className }) => {
+  const [preview, setPreview] = useState(file);
   const inputRef = useRef();
 
   const handleFileChange = (e) => {

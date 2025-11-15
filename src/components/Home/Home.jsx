@@ -38,7 +38,7 @@ export default function Home() {
 			console.log(response.status_code)
 		} else {
 			console.log(response.status_code)
-			console.log(response)
+			// console.log(response)
 			dispatch(addVideosList(response.data))
 		}
 	}
@@ -63,16 +63,16 @@ export default function Home() {
 				) : (
 				<div className="max-w-screen-xl mx-auto w-full pr-6">
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-start">
-					{videosList.map((video, index) => (
-						<Link key={video._id} to={`/video-play/${video.channel.channelId}&${video.channel.channelHandle}/${video.id}`}>
+					{videosList?.map((video, index) => (
+						<Link key={video?._id} to={`/video-play/${video?.channel?.channelId}&${video?.channel?.channelHandle}/${video?.id}`}>
 							<Card
-								imageUrl={video.thumbnailUrl}
-								title={video.title}
-								views={makeViews(video.views)}
-								timestamp={video.duration}
-								profile={video.channel.channelAvatarUrl  || '/userdefault.png'}
-								chennelName={video.channel.channelName}
-								timeUpload={video.createdAt}
+								imageUrl={video?.thumbnailUrl}
+								title={video?.title}
+								views={makeViews(video?.views)}
+								timestamp={video?.duration}
+								profile={video?.channel?.channelAvatarUrl  || '/userdefault.png'}
+								chennelName={video?.channel?.channelName}
+								timeUpload={video?.createdAt}
 							/>
 						</Link>
 					))}

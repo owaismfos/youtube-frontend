@@ -37,7 +37,7 @@ export default function Sidebar({currentPath}) {
 
     const getChannelDetails = async () => {
         const channelResponse = await channelService.getChannelDetails()
-        console.log("Channel Response: ", channelResponse)
+        // console.log("Channel Response: ", channelResponse)
         if (channelResponse.status_code >= 400) {
             console.log("I am checking the token exiration")
             setError(channelResponse)
@@ -49,12 +49,12 @@ export default function Sidebar({currentPath}) {
 
     useEffect(() => {
         if (userStatus){
-            console.log("Reprint the side bar...")
+            // console.log("Reprint the side bar...")
             getChannelDetails()
         } else {
             console.log("No user data")
         }
-        console.log('User Data: ', userData)
+        // console.log('User Data: ', userData)
     }, [userStatus])
 
     return (

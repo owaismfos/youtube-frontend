@@ -4,8 +4,10 @@ export class VideoService {
     async getVideos() {
         try {
             const response = await axiosInstance.get('/videos/all-videos');
+            console.log("All Video Response: ", response.data)
             return response.data;
         } catch (error) {
+            console.log("All Video Response: ", error.response.data)
             return error.response.data;
         }
     }

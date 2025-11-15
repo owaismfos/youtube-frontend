@@ -40,15 +40,15 @@ export default function Video() {
         //         break
         //     }
         // }
-        setVideo(response.data)
-        setUser(response.data.user)
-        setChannel(response.data.channel)
-        console.log("Video Response: ", response.data)
+        setVideo(response?.data)
+        setUser(response.data?.user)
+        setChannel(response.data?.channel)
+        console.log("Video Response: ", response?.data)
     }
 
     const postView = async () => {
         const viewsResponse = await videoService.postView(videoId)
-        const viewsNumber = viewsResponse.data
+        const viewsNumber = viewsResponse?.data
         console.log(viewsNumber)
         if (viewsNumber >= 1000000000000) {
 			setViews((viewsNumber / 1000000000000).toFixed(1) + 'T')
@@ -68,8 +68,8 @@ export default function Video() {
     const getSubscribers = async () => {
         const subscribersResponse = await channelService.getSubscribers(channelId)
         console.log(subscribersResponse)
-        const subscribersNumber = subscribersResponse.data.subscribersCount
-        setIsSubscribed(subscribersResponse.data.isSubscribed)
+        const subscribersNumber = subscribersResponse?.data?.subscribersCount
+        setIsSubscribed(subscribersResponse?.data?.isSubscribed)
         console.log(subscribersNumber)
         if (subscribersNumber >= 100000) {
             const d = subscribersNumber / 1000000
@@ -85,7 +85,7 @@ export default function Video() {
     const postSubscribe = async () => {
         const subscribeResponse = await channelService.subscribeChannel(channelId)
         console.log(subscribeResponse)
-        if (subscribeResponse.success) {
+        if (subscribeResponse?.success) {
             getSubscribers()
         }
     }
@@ -93,7 +93,7 @@ export default function Video() {
     const postUnsubscribe = async () => {
         const unsubscribeResponse = await channelService.unsubscribeChannel(channelId)
         console.log(unsubscribeResponse)
-        if (unsubscribeResponse.success) {
+        if (unsubscribeResponse?.success) {
             getSubscribers()
         }
     }
@@ -107,20 +107,20 @@ export default function Video() {
     const getComments = async () => {
         const response = await videoService.getComments(videoId)
         console.log("Comments: ", response)
-        if (response.success) {
-            dispatch(addCommentsList(response.data)) 
+        if (response?.success) {
+            dispatch(addCommentsList(response?.data)) 
         }
-        setCommentsList(response.data)
+        setCommentsList(response?.data)
     }
 
     const postComment = async (e) => {
         e.preventDefault()
         const response = await videoService.postComment(videoId, comment)
         console.log(response)
-        if (response.success) {
+        if (response?.success) {
             dispatch(addComment(response.data))
         }
-        setCommentsList((prevComment) => [...prevComment, response.data])
+        setCommentsList((prevComment) => [...prevComment, response?.data])
         setComment('')
     }
 
@@ -128,8 +128,8 @@ export default function Video() {
     const getVideoLikes = async () => {
         const response = await videoService.getVideoLikes(videoId)
         console.log(response)
-        setLikesCount(response.data.likesCount)
-        setIsLiked(response.data.isLiked)
+        setLikesCount(response?.data?.likesCount)
+        setIsLiked(response?.data?.isLiked)
     }
 
     const likeVideo = async () => {
@@ -157,9 +157,9 @@ export default function Video() {
         <div className="flex py-2 mx-20">
         {/* First column (2/3 width) */}
             <div className="w-2/3 mr-5">
-                <VideoPlayer videoSrc={video.videoUrl} />
+                <VideoPlayer videoSrc={video?.videoUrl} />
                 <div className='text-white py-3'>
-                    <h1 className='text-2xl font-bold my-3'>{video.title}</h1>
+                    <h1 className='text-2xl font-bold my-3'>{video?.title}</h1>
                     {/* <p className='my-2'>{views} views</p> */}
                     <div className='flex'>
                         <div className='w-1/2 my-4 flex my-auto'>
@@ -195,15 +195,15 @@ export default function Video() {
                         </div>
                     </div>
                     <div className='p-3  bg-gray-800 rounded-md'>
-                        <p className='text-md font-semibold text-gray-200'>{views} views {timeSinceUpload(video.createdAt)}</p>
-                        <p className='py-2'>{video.description}</p>
+                        <p className='text-md font-semibold text-gray-200'>{views} views {timeSinceUpload(video?.createdAt)}</p>
+                        <p className='py-2'>{video?.description}</p>
                     </div>
 
                     <div className="max-w-4xl mt-8">
                     {/* <!-- Comment Form Container --> */}
                         <form className="flex space-x-4">
                             {/* <!-- Avatar --> */}
-                            <img src={userData.userAvatar} alt="Avatar" className="w-12 h-10 rounded-full" />
+                            <img src={userData?.userAvatar} alt="Avatar" className="w-12 h-10 rounded-full" />
 
                             {/* <!-- Input Field --> */}
                             {/* <!-- Input field with bottom border --> */}
@@ -226,18 +226,18 @@ export default function Video() {
                         <h3 className='text-xl font-bold mb-5'>{commentsList?.length} Comments</h3>
                         {/* <!-- Single comment --> */}
                         {commentsList?.toReversed()?.map((comment) => (
-                            <div className="flex space-x-4 items-start" key={comment.id}>
+                            <div className="flex space-x-4 items-start" key={comment?.id}>
                                 {/* <!-- Commenter's avatar --> */}
-                                <img src={comment.user.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full" />
+                                <img src={comment?.user?.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full" />
 
                                 {/* <!-- Comment content --> */}
                                 <div>
                                     {/* <!-- Commenter's username --> */}
-                                    <div className="font-semibold text-gray-300 flex items-center gap-2">{comment.user.username}
-                                        <div className="text-gray-400 text-xs">{timeSinceUpload(comment.createdAt)}</div>
+                                    <div className="font-semibold text-gray-300 flex items-center gap-2">{comment?.user?.username}
+                                        <div className="text-gray-400 text-xs">{timeSinceUpload(comment?.createdAt)}</div>
                                     </div>
                                     {/* <!-- Comment text --> */}
-                                    <p className="text-white font-thin">{comment.comment}</p>
+                                    <p className="text-white font-thin">{comment?.comment}</p>
                                     {/* <!-- Timestamp --> */}
                                 </div>
                             </div>

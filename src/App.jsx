@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import { ForgotPassword, ChatComponent, Header, Home, About, Subscription, Video, Login, Register, VideoUpload, Channel, CreateChannel } from './components/index.js'
+import { ForgotPassword, ChatComponent, Header, Home, About, Subscription, Video, Login, Register, VideoUpload, VideoUploader, Channel, CreateChannel } from './components/index.js'
 import authService from './api/userapi.js'
 import { login } from './features/auth/authSlice.js';
 import { addUsersList } from './features/chat/chatSlice.js'
@@ -35,7 +35,7 @@ function App() {
       try {
         if (localStorage.getItem('authToken')) {
           const res = await authService.userList();
-          console.log('Users: ', res.data)  // Use res.data to get the response body
+          // console.log('Users: ', res.data)  // Use res.data to get the response body
           // setUsers(res.data)
           dispatch(addUsersList(res.data))
         }
@@ -48,7 +48,7 @@ function App() {
       try {
         setIsLoading(true)
         const res = await authService.userSearch(q)
-        console.log('Users: ', res.data)  // Use res.data to get the response body
+        // console.log('Users: ', res.data)  // Use res.data to get the response body
         setSearchResults(res.data)
         // console.log()
         setIsLoading(false)
@@ -83,7 +83,7 @@ function App() {
                     {userStatus ? (
                         <>
                         {/* These are protected urls which acces by an authenticated user */}
-                        <Route path='/upload-video' Component={VideoUpload} />
+                        <Route path='/upload-video' Component={VideoUploader} />
                         <Route path='/subscription' Component={Subscription} />
                         <Route path='/video-play/:channelInfo/:videoId' Component={Video} />
                         {/* <Route path='/channel/:channelId' Component={Channel} /> */}
@@ -140,7 +140,7 @@ function App() {
                           onClick={() => handleUserClick(user)}
                         >
                           <img
-                            src={user.avatarUrl || '/userdefault.png'}
+                            src={user.avatar || '/userdefault.png'}
                             alt={user.fullname}
                             className="w-10 h-10 rounded-full mr-4"
                           />
@@ -154,17 +154,30 @@ function App() {
                           className="flex items-center p-2 hover:bg-gray-700 hover:rounded-lg cursor-pointer"
                           onClick={() => handleUserClick(user)}
                         >
+                          {/* Avatar */}
                           <img
-                            src={user.avatarUrl || '/userdefault.png'}
+                            src={user.avatar || '/userdefault.png'}
                             alt={user.fullname}
                             className="w-10 h-10 rounded-full mr-4"
                           />
-                          <span>{user.fullname}</span>
-                          {user.unreadMessageCount > 0 && (
-                            <div className="ml-2 bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                              {user.unreadMessageCount}
+
+                          {/* Name and Last Message Block */}
+                          <div className="flex flex-col flex-grow">
+                            {/* Top Row: Name and Unread Count */}
+                            <div className="flex items-center">
+                              <span className="font-semibold text-white">{user.fullname}</span>
+                              {user.unreadMessageCount > 0 && (
+                                <div className="ml-2 bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                                  {user.unreadMessageCount}
+                                </div>
+                              )}
                             </div>
-                          )}
+
+                            {/* Bottom Row: Last Message (truncated) */}
+                            <span className="text-sm text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis">
+                              {user?.lastMessageContent && user?.lastMessageContent.length > 30 ? '...': user?.lastMessageContent}
+                            </span>
+                          </div>
                         </div>
                       ))
                     )}

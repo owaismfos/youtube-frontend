@@ -430,7 +430,7 @@ function Channel() {
               )}
             </div>
             <p className="text-gray-400 text-xl text-white">
-              @{channel.channelHandle}
+              @{channel?.channelHandle}
             </p>
             <div className="flex items-center space-x-3 text-gray-400">
               <span className="text-white">
@@ -452,7 +452,7 @@ function Channel() {
               </button>
             </div>
             <p className="mt-2 max-w-xl text-white">
-              {channel.channelDescription}
+              {channel?.channelDescription}
             </p>
           </div>
         </div>

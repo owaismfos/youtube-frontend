@@ -32,7 +32,7 @@ const Register = () => {
         formData.append('fullname', userData.fullname)
         formData.append('username', userData.username)
         formData.append('email', userData.email)
-        formData.append('avatar', file)
+        // formData.append('avatar', file)
         formData.append('password', userData.password)
         console.log("Form Data: " + formData)
 
@@ -124,7 +124,7 @@ const Register = () => {
                         required
                     />
                 </div>
-                <div className="mb-2">
+                {/* <div className="mb-2">
                     <label className="block text-gray-500 text-sm font-bold mb-2" htmlFor="avatar">
                     Avatar
                     </label>
@@ -136,7 +136,7 @@ const Register = () => {
                         onChange={(e) => setFile(e.target.files[0])}
                         required
                     />
-                </div>
+                </div> */}
                 <div className="flex items-center justify-between">
                     <button
                     className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

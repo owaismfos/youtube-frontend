@@ -94,7 +94,7 @@ function Header() {
             <div className="relative">
                 <button className="text-white" id="dropdown-button" onClick={toggleDropdown}>
                 <img
-                    src={userData.userAvatar}
+                    src={userData?.userAvatar}
                     alt="Profile Image"
                     className="h-8 w-8 rounded-full ml-10"
                 />
@@ -117,7 +117,7 @@ function Header() {
                 <hr className="border-gray-500 py-1" />
                 {userInfo?.isChannel ? (
                     <Link
-                    to={`/channel/${userInfo.channelId}?${userInfo.channelHandle}`}
+                    to={`/channel/${userInfo?.channelId}?unique_id=${userInfo.uniqueId}&handle=${userInfo.channelHandle}`}
                     className="block py-2 px-4 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2"
                     >
                     Go To Your Channel

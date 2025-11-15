@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { useDispatch } from 'react-redux'
 import { FaPaperclip, FaPaperPlane, FaSpinner, FaMicrophone, FaStopCircle } from 'react-icons/fa';
 import ReactPlayer from 'react-player'
 import store from '../../app/store';
 import { formatDate } from '../../utils/timeConversion.js';
 import { addUsersList } from '../../features/chat/chatSlice';
+import { unixToTime, groupMessagesByDate, getLabelForDate } from '../../utils/timeConversion.js';
 
 
 const ChatComponent = ({ activeUser, onClose }) => {
   const dispatch = useDispatch()
-  const [messages, setMessages] = useState([])
+  const [messagesList, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [ws, setWs] = useState(null)
   const [userStatus, setUserStatus] = useState({})
@@ -280,40 +281,95 @@ const ChatComponent = ({ activeUser, onClose }) => {
       setWs(socket);
 
       socket.onopen = () => {
-        console.log('WebSocket connection opened.');
+        // console.log('WebSocket connection opened.');
         socket.send(JSON.stringify({ action: 'get_messages' }))
         socket.send(JSON.stringify({ action: 'user_status' }))
       };
       socket.onmessage = async (event) => {
-        console.log('Received message from server: ', event.data);
+        // console.log('Received message from server: ', event.data);
         const messages = JSON.parse(event.data)
-        console.log(messages)
+        // console.log(messages)
         if (messages.action === 'get_messages'){
-          console.log(messages.data)
+          // console.log(messages.data)
+          messages.data = groupMessagesByDate(messages.data)
+          // console.log("Grouped Messages: ", messages.data)
           setMessages(messages.data)
         } else if (messages.data.action == 'type_message' && messages.data.typingUser !== activeUser.id) {
           setIsTyping(messages.data.isTyped)
           setTypingUser(messages.data.typingUser)
-        } else if (messages.data.action === 'new_message') {
-          //console.log("newmessage: ", messages.data)
+        } else if (messages.data.action === 'new_message' || messages.data.action === 'post_message') {
           setIsUploading(false)
-          setMessages((prevMessages) => [...prevMessages, messages.data.data])
+          const newMessage = messages.data.data
+          // console.log('--- DEBUGGING ---');
+          // console.log('Sender Value:', messages.data.data.sender, '| Type:', typeof messages.data.data.sender);
+          // console.log('Active User ID Value:', activeUser.id, '| Type:', typeof activeUser.id);
+          // console.log('Are they equal with == ?', messages.data.data.sender == activeUser.id);
+          // console.log('Are they not equal with != ?', messages.data.data.sender != activeUser.id);
+          // console.log('-----------------');
+          if (messages.data.action === 'new_message' && messages.data.data.sender != activeUser.id){
+            console.log("New message from another user, ignoring...")
+            return
+          }
+          // const newMessage = messages.data.data
+          // console.log("New Message: ", newMessage)
+          setMessages((prevGroupedMessage) => {
+            // Create a new copy of the array to avoid direct mutation  
+            let updatedGroups = [...prevGroupedMessage]
+
+            // 1. Determine the date label for the new message
+            const messageDate = new Date(newMessage.insertedAt * 1000)
+            const dateLabel = getLabelForDate(messageDate)
+            
+            // 2. Find if a group for this date already exists
+            const groupIndex = updatedGroups.findIndex(group => group.date === dateLabel);
+
+            if (groupIndex > -1) {
+              // 3a. If the group EXISTS, add the message to it
+              const targetGroup = updatedGroups[groupIndex];
+              
+              // Create a new group object with the new message added
+              const updatedGroup = {
+                ...targetGroup,
+                messages: [...targetGroup.messages, newMessage]
+              };
+              
+              // Replace the old group with the updated one
+              updatedGroups[groupIndex] = updatedGroup;
+
+            } else {
+              // 3b. If the group DOES NOT EXIST, create a new one
+              const newGroup = {
+                date: dateLabel,
+                messages: [newMessage],
+                total: 1
+              };
+              // Add the new group to the end of the array
+              updatedGroups.push(newGroup);
+            }
+
+            return updatedGroups;
+          })
+        
+          // console.log("newmessage: ", messagesList)
+          // setIsUploading(false)
+          // setRawMessages((prevMessages) => [...prevMessages, messages.data.data])
+          // setMessages(groupMessagesByDate(rawMessages))
         } else if (messages.data.action === 'user_status') {
-          console.log(messages.data.data)
+          // console.log(messages.data.data)
           setUserStatus(messages.data.data)
         } else if (messages.action === 'post_message') {
-          console.log(messages.data.data)
+          // console.log(messages.data.data)
           setIsUploaded(false)
           // setIsUploading(false)
           handleRemovePreview()
         } else if (messages.data.action === 'send_progress') {
             setProgress(messages.data.progress)
-            console.log("Progress: ", progress)
+            // console.log("Progress: ", progress)
             if (messages.data.progress === 100) {
               setIsUploading(false)
             }
         } else if (messages.data.action === 'call') {
-          console.log("Call data: ", messages.data)
+          // console.log("Call data: ", messages.data)
           if (messages.data.type === 'offer') {
             await handleOffer(data.offer);
           } else if (messages.data.type === 'answer') {
@@ -322,7 +378,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
             await peerRef.current.addIceCandidate(new RTCIceCandidate(data.candidate))
           }
         } else if (messages.data.action === 'user_list') {
-          console.log("userList: ", messages.data)
+          // console.log("userList: ", messages.data)
           dispatch(addUsersList(messages.data.data))
         }
       };
@@ -335,8 +391,8 @@ const ChatComponent = ({ activeUser, onClose }) => {
         console.log('WebSocket error: ', error);
       };
 
-      console.log("Messages:", messages)
-      console.log("Message Type: ", typeof messages)
+      // console.log("Messages:", messagesList)
+      // console.log("Message Type: ", typeof messagesList)
       // Cleanup WebSocket connection when component unmounts or activeUser changes
       return () => {
         socket.close();
@@ -348,7 +404,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messagesList]);
 
   return (
     <div className="flex flex-col h-[500px] w-full border border-gray-700 rounded-lg shadow-lg bg-gray-800 text-white space-2">
@@ -358,7 +414,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
       >
         {/* User Avatar */}
         <img
-          src={activeUser.avatarUrl || '/userdefault.png'}
+          src={activeUser.avatar || '/userdefault.png'}
           alt={activeUser.fullname}
           className="w-10 h-10 rounded-full mr-4"
         />
@@ -381,7 +437,7 @@ const ChatComponent = ({ activeUser, onClose }) => {
             </>
           ) : (
             <span className="text-gray-400 text-[12px]">
-              Last active: {userStatus ? formatDate(userStatus?.lastActive) : 'N/A'}
+              Last active: {userStatus ? getLabelForDate(new Date(userStatus?.lastActive * 1000)) : 'N/A'}
             </span>
           )}
         </div>
@@ -394,67 +450,80 @@ const ChatComponent = ({ activeUser, onClose }) => {
       </div>
       {/* <div className="p-4 font-bold border-b border-gray-700">Chat with {activeUser.fullname}</div> */}
       <div className="message-container flex-1 overflow-y-auto p-2" ref={chatContainerRef}>
-        {messages.map((message) => (
-          <div
-            key={message?.id}
-            className={`flex my-2 ${
-              message?.sender == userId ? 'justify-end' : 'justify-start'
-            }`}
-          >
-            <div
-              className={`${
-                message?.contentType == 'video' 
-                || message?.contentType == 'image' 
-                || message?.contentType == 'audio' ? 'px-1' : 'px-4 py-2' // Remove padding if mediaFile exists
-              } rounded-lg max-w-xs ${
-                message?.sender == userId
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-700 text-white'
-              }`}
-            >
-              {message?.contentType == 'video' && message?.mediaFile && (
-                <div className="mt-2">
-                  <video controls className="w-full rounded-lg">
-                    <source src={message.mediaFile} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              )}
-
-              {/* Check and render image based on media file extensions */}
-              {message?.contentType == 'image' && message?.mediaFile && (
-                <div className="mt-2">
-                  <img
-                    src={message.mediaFile}
-                    alt="Message Media"
-                    className="w-full h-auto rounded-lg"
-                  />
-                </div>
-              )}
-
-              {/* Render audio */}
-              {message?.contentType === 'audio' && message?.mediaFile && (
-                <div className="">
-                  {/* <ReactPlayer
-                    url={message.mediaFile}          // The URL of the audio file
-                    playing={false}                  // Whether the audio is auto-playing
-                    controls={true}                  // Show controls (play, pause, etc.)
-                    width="100%"                     // Ensure it stretches the full width
-                    height="40px"                    // Set a fixed height
-                    className="rounded-lg" // Optional custom styling
-                  /> */}
-                  <audio controls className="rounded-lg py-[10px]">
-                    <source src={message.mediaFile} type="audio/mp3" />
-                    Your browser does not support the audio tag.
-                  </audio>
-                </div>
-              )}
-              {message?.content}
-              <div className="text-[10px] text-gray-400 justify-end">
-                {formatDate(message.insertedAt)}
-              </div>
+        {messagesList.map((group) => (
+          // Use React.Fragment to group elements without adding extra nodes to the DOM
+          <Fragment key={group?.date}>
+            {/* 1. Render the Date Separator Header */}
+            <div className="text-center my-3">
+              <span className="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full">
+                {group?.date}
+              </span>
             </div>
-          </div>
+
+            {/* 2. Render all messages for that date group */}
+            {group?.messages.map((message) => (
+              <div
+                key={message?.id}
+                className={`flex my-2 ${
+                  message?.sender == userId ? 'justify-end' : 'justify-start'
+                }`}
+              >
+                <div
+                  className={`${
+                    message?.contentType === 'video' ||
+                    message?.contentType === 'image' ||
+                    message?.contentType === 'audio'
+                      ? 'px-1 py-1' // Keep a little padding for media
+                      : 'px-4 py-2'
+                  } rounded-lg max-w-xs ${
+                    message?.sender == userId
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-700 text-white'
+                  }`}
+                >
+                  {/* --- All your media rendering logic stays the same --- */}
+                  {message?.contentType === 'video' && message?.mediaFile && (
+                    <div className="mb-1">
+                      <video controls className="w-full rounded-lg">
+                        <source src={message.mediaFile} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  )}
+
+                  {message?.contentType === 'image' && message?.mediaFile && (
+                    <div className="mb-1">
+                      <img
+                        src={message.mediaFile}
+                        alt="Message Media"
+                        className="w-full h-auto rounded-lg"
+                      />
+                    </div>
+                  )}
+
+                  {message?.contentType === 'audio' && message?.mediaFile && (
+                    <div className="py-2 px-2">
+                      <audio controls className="w-full">
+                        <source src={message.mediaFile} type="audio/mpeg" />
+                        Your browser does not support the audio tag.
+                      </audio>
+                    </div>
+                  )}
+                  
+                  {/* Render text content if it exists */}
+                  {message?.content && (
+                    <div className="px-2 pb-1">{message.content}</div>
+                  )}
+                  
+                  {/* The timestamp for the individual message */}
+                  <div className="text-xs text-gray-300 text-right px-2">
+                    {/* The backend now sends the pre-formatted time, so no need for formatDate */}
+                    {unixToTime(message.insertedAt)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Fragment>
         ))}
         {isUploading && (
           <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-700 bg-opacity-50 flex flex-col justify-center items-center space-y-4 p-4">

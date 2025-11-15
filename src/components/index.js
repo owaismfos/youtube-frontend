@@ -16,6 +16,8 @@ import Login from "./Signup/Login";
 import ChatComponent from "./Chat/ChatComponent";
 import ForgotPassword from "./Signup/ForgotPassword";
 
+import VideoUploader from "./Videos/VideoUploader"; // Ensure this line is included
+
 export {
     Header,
     Home,
@@ -33,4 +35,5 @@ export {
     ImageUploadModal,
     ChatComponent,
     ForgotPassword,
+    VideoUploader,
 }

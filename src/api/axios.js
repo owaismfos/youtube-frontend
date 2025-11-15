@@ -12,7 +12,7 @@ console.log("Server Url: ", import.meta.env.VITE_SERVER_URL)
 instance.interceptors.request.use((config) => {
     const state = store.getState();
     const token = state.auth.userData?.accessToken;
-    console.log("This is access token in axios: ", token);
+    // console.log("This is access token in axios: ", token);
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
